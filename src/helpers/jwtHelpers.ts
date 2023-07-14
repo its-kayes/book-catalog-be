@@ -4,7 +4,7 @@ import { JWT_SECRET } from '../config/siteEnv';
 
 type IPayload = {
   _id: ObjectId;
-  role: string;
+  username: string;
 };
 
 const createToken = async (payload: IPayload, options?: object) => {
