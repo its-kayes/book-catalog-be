@@ -18,6 +18,10 @@ const bookSchema = new Schema<IBook>({
     publication: {
         type: String,
         required: [true, "Publication is required"],
+    },
+    addedBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
     }
 }, {
     timestamps: true,

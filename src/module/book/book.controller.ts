@@ -58,6 +58,10 @@ const bookDetailsById = catchAsync(
   }
 );
 
+const deleteBook = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    
+});
+
 export const bookController = {
   addBook,
   bookDetailsById
