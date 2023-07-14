@@ -24,7 +24,7 @@ app.use(options);
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
-    message: 'Welcome to the Cow bazar'
+    message: 'Welcome to the Book bazar'
   });
 });
 
