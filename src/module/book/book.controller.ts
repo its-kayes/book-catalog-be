@@ -58,11 +58,49 @@ const bookDetailsById = catchAsync(
   }
 );
 
-const deleteBook = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    
-});
+const deleteBook = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    if (!id) {
+      next(new AppError("Please provide book id", httpStatus.BAD_REQUEST));
+    }
+
+    const isBookExit = await Book.findById(id).lean();
+
+    if (!isBookExit) {
+      return next(new AppError("No record found", httpStatus.NOT_FOUND));
+    }
+
+    const isSameUser =
+      (isBookExit.addedBy.toString() as string) === req.body.isAuthorized._id;
+    if (!isSameUser) {
+      return next(
+        new AppError(
+          "You are not allow to delete this book",
+          httpStatus.UNAUTHORIZED
+        )
+      );
+    }
+
+    const drop = await Book.findByIdAndDelete(id);
+    if (!drop) {
+      return next(
+        new AppError("Something went wrong", httpStatus.INTERNAL_SERVER_ERROR)
+      );
+    }
+
+    return throwResponse(
+      res,
+      drop,
+      httpStatus.OK,
+      "Book deleted successfully",
+      true
+    );
+  }
+);
 
 export const bookController = {
   addBook,
-  bookDetailsById
+  bookDetailsById,
+  deleteBook
 };

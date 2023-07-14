@@ -6,6 +6,6 @@ const router: Router = Router();
 
 router.post("/add", isVerified, bookController.addBook);
 router.get("/details/:id", bookController.bookDetailsById);
-// router
+router.delete("/delete/:id", isVerified, bookController.deleteBook)
 
 export { router as BookRoutes}
