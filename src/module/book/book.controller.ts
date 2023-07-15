@@ -107,7 +107,7 @@ const updateBook = catchAsync(async(req: Request, res: Response, next: NextFunct
   }
 
   const update = await bookService.updateBookById(req.body, id);
-  if(!update) {
+  if(!update || null) {
     next(new AppError("Something went wrong", httpStatus.INTERNAL_SERVER_ERROR));
   }
 
