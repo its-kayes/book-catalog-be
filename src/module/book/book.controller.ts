@@ -5,6 +5,7 @@ import { bookService } from "./book.service";
 import AppError from "../../errors/AppError";
 import { Book } from "./book.model";
 import httpStatus from "http-status";
+import { ObjectId } from "mongoose";
 
 const addBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -99,8 +100,23 @@ const deleteBook = catchAsync(
   }
 );
 
+const updateBook = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  if(!id) {
+    next(new AppError("Please provide book id", httpStatus.BAD_REQUEST));
+  }
+
+  const update = await bookService.updateBookById(req.body, id);
+  if(!update) {
+    next(new AppError("Something went wrong", httpStatus.INTERNAL_SERVER_ERROR));
+  }
+
+  return throwResponse(res, update, httpStatus.OK, "Book updated successfully", true);
+});
+
 export const bookController = {
   addBook,
   bookDetailsById,
-  deleteBook
+  deleteBook,
+  updateBook
 };

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { IBook } from "./book.interface";
 import { Book } from "./book.model";
 
@@ -12,6 +13,12 @@ const saveBook = async (book: any): Promise<IBook | null> => {
   return save;
 };
 
+const updateBookById = async(book: IBook, id: string): Promise<IBook | null> => {
+  const updatedBook = await Book.findByIdAndUpdate(id, book, { new: true });
+  return updatedBook;
+}
+
 export const bookService = {
   saveBook,
+  updateBookById
 };
