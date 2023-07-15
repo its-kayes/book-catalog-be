@@ -119,6 +119,7 @@ const updateBook = catchAsync(async(req: Request, res: Response, next: NextFunct
   return throwResponse(res, update, httpStatus.OK, "Book updated successfully", true);
 });
 
+// Get all books
 const getBooks = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
 
   const {
