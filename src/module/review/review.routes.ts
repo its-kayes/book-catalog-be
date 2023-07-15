@@ -5,4 +5,4 @@ const router: Router = Router();
 
 router.post("/give-review", reviewController.giveReview);
 
-export { router as ReviewRoutes}
+export { router as ReviewRoutes };
