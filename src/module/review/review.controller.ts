@@ -33,6 +33,32 @@ const giveReview = catchAsync(
   }
 );
 
+const getReviewByBookName = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { book } = req.query;
+    if (!book) {
+      next(new AppError("Please provide book name", httpStatus.BAD_REQUEST));
+    }
+
+    const result = await Review.find({ book });
+
+    if (!result) {
+      next(
+        new AppError("Something went wrong", httpStatus.INTERNAL_SERVER_ERROR)
+      );
+    }
+
+    throwResponse(
+      res,
+      result,
+      httpStatus.OK,
+      "Review added successfully",
+      true
+    );
+  }
+);
+
 export const reviewController = {
   giveReview,
+  getReviewByBookName,
 };
