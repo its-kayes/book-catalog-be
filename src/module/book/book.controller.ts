@@ -5,8 +5,10 @@ import { bookService } from "./book.service";
 import AppError from "../../errors/AppError";
 import { Book } from "./book.model";
 import httpStatus from "http-status";
-import { ObjectId } from "mongoose";
+import { ObjectId, SortOrder } from "mongoose";
+import { BookQueryParams } from "./book.interface";
 
+// Add book 
 const addBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { title, author, genre, publication } = req.body;
@@ -35,6 +37,7 @@ const addBook = catchAsync(
   }
 );
 
+// Book Details by id
 const bookDetailsById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -59,6 +62,7 @@ const bookDetailsById = catchAsync(
   }
 );
 
+// Delete book
 const deleteBook = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
@@ -100,6 +104,7 @@ const deleteBook = catchAsync(
   }
 );
 
+// Update book
 const updateBook = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   if(!id) {
@@ -114,9 +119,87 @@ const updateBook = catchAsync(async(req: Request, res: Response, next: NextFunct
   return throwResponse(res, update, httpStatus.OK, "Book updated successfully", true);
 });
 
+const getBooks = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+
+  const {
+    limit = 10,
+    page,
+    sortBy,
+    sortOrder,
+    // minPrice,
+    // maxPrice,
+    // location,
+    searchTerm
+  } = req.query as BookQueryParams;
+
+  const skip = (Number(page) - 1) * Number(limit) || 0;
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+  }
+
+  const whereConditions: any = {};
+
+  const addWhereCondition = (
+    field: string,
+    regexOptions: string,
+    value: string
+  ) => {
+    whereConditions[field] = {
+      $regex: value,
+      $options: regexOptions
+    };
+  };
+
+  // if (minPrice && maxPrice) {
+  //   whereConditions.price = {
+  //     $gte: Number(minPrice),
+  //     $lte: Number(maxPrice)
+  //   };
+  // }
+
+  // if (location) {
+  //   addWhereCondition('location', 'i', location);
+  // }
+
+  if (searchTerm) {
+    const searchFields = ['title', 'author', 'genre'];
+    whereConditions.$or = searchFields.map(field => ({
+      [field]: {
+        $regex: searchTerm,
+        $options: 'i'
+      }
+    }));
+  }
+
+  const result = await bookService.getBook(
+    Number(limit),
+    skip,
+    whereConditions,
+    sortConditions
+  );
+
+  const meta = {
+    page: Number(page) || 1,
+    limit: Number(limit) || 10
+  };
+
+  throwResponse(
+    res,
+    result,
+    httpStatus.OK,
+    'Book fetched successfully',
+    true,
+    meta
+  );
+
+
+});
 export const bookController = {
   addBook,
   bookDetailsById,
   deleteBook,
-  updateBook
+  updateBook,
+  getBooks
 };

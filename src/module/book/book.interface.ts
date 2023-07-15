@@ -11,3 +11,15 @@ export interface IBook {
 }
 
 export type BookModel = Model<IBook, Record<string, unknown>>;
+
+export type BookQueryParams = {
+    limit?: string;
+    page?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    location?: string;
+    searchTerm?: string;
+  };
+  

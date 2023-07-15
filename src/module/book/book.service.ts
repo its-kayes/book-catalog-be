@@ -1,9 +1,10 @@
-import { ObjectId } from "mongoose";
+import { ObjectId, SortOrder } from "mongoose";
 import { IBook } from "./book.interface";
 import { Book } from "./book.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 
+// Add book
 const saveBook = async (book: any): Promise<IBook | null> => {
   const save = await Book.create({
     title: book.title,
@@ -15,6 +16,7 @@ const saveBook = async (book: any): Promise<IBook | null> => {
   return save;
 };
 
+// Update book by Id
 const updateBookById = async(book: any, id: string): Promise<IBook | null> => {
   const findBook = await Book.findById(id).lean();
 
@@ -33,7 +35,22 @@ const updateBookById = async(book: any, id: string): Promise<IBook | null> => {
   return updatedBook;
 }
 
+const getBook = async (
+  limit: number,
+  skip: number,
+  whereConditions: object,
+  sortConditions: { [key: string]: SortOrder }
+) => {
+  const books = await Book.find(whereConditions)
+    .sort(sortConditions)
+    .limit(Number(limit))
+    .skip(skip);
+
+  return books;
+};
+
 export const bookService = {
   saveBook,
-  updateBookById
+  updateBookById,
+  getBook
 };
