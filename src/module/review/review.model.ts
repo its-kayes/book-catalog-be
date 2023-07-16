@@ -20,6 +20,7 @@ const reviewSchema = new Schema<IReview>(
       required: [true, "Rating is required"],
       min: [1, "Rating must be at least 1"],
       max: [5, "Rating must be at most 5"],
+      default: 1,
     },
   },
   {
